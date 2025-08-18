@@ -1,4 +1,4 @@
-name: Pytest Demo
+name: CI
 
 on:
   push:
@@ -11,25 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Run Pytest with HTML report
-      run: |
-        pytest -v --html=report.html --self-contained-html
+      - name: Run tests with coverage
+        run: |
+          pytest --cov=utils --cov=tests --cov-report=xml --cov-report=term-missing
 
-    - name: Upload report
-      uses: actions/upload-artifact@v4
-      with:
-        name: pytest-report
-        path: report.html
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: true

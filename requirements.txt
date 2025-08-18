@@ -1,2 +1,5 @@
 pytest
+requests
 pytest-html
+pytest-cov
+python-dotenv
